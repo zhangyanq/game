@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>啵啵水族箱 · 微信小游戏预览</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: radial-gradient(ellipse at 50% 35%, #1b3b4a, #080f19 70%);
+        min-height: 100svh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: system-ui;
+        color: #bedbdc;
+      }
+      canvas {
+        display: block;
+        touch-action: none;
+        width: 390px;
+        height: 844px;
+        max-height: 100svh;
+        max-width: 100vw;
+        box-shadow: 0 25px 100px #0008;
+        border-radius: 30px;
+      }
+      .note {
+        position: fixed;
+        left: 38px;
+        bottom: 30px;
+        font-size: 12px;
+        line-height: 2;
+        color: #7793a1;
+        letter-spacing: 1px;
+      }
+      .note strong {
+        color: #badacf;
+        font-weight: 500;
+      }
+      @media (max-width: 700px) {
+        .note {
+          display: none;
+        }
+        canvas {
+          border-radius: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="note">
+      <strong>BOBO AQUARIUM</strong><br />微信小游戏 · 浏览器玩法预览<br />真实广告需在微信环境验证
+    </div>
+    <canvas id="game" aria-label="啵啵水族箱游戏"></canvas>
+    <script src="../src/config.js"></script>
+    <script src="../src/core.js"></script>
+    <script src="../src/platform.js"></script>
+    <script src="../src/app.js"></script>
+    <script>
+      const canvas = document.getElementById("game");
+      function size() {
+        const s = Math.min(innerWidth / 390, innerHeight / 844, 1);
+        canvas.style.width = 390 * s + "px";
+        canvas.style.height = 844 * s + "px";
+        return {
+          width: 390 * s,
+          height: 844 * s,
+          dpr: Math.min(devicePixelRatio || 1, 3),
+        };
+      }
+      const app = new BoboApp(BoboPlatform.create(null, canvas), size());
+      window.boboApp = app;
+      canvas.addEventListener("pointerdown", (e) => {
+        canvas.setPointerCapture(e.pointerId);
+        let r = canvas.getBoundingClientRect();
+        app.pointerDown(e.clientX - r.left, e.clientY - r.top);
+      });
+      canvas.addEventListener("pointerup", (e) => {
+        let r = canvas.getBoundingClientRect();
+        app.pointerUp(e.clientX - r.left, e.clientY - r.top);
+      });
+      canvas.addEventListener("pointercancel", () => app.cancelPointer());
+      addEventListener("resize", () => app.resize(size()));
+      function loop(t) {
+        app.draw(t);
+        requestAnimationFrame(loop);
+      }
+      requestAnimationFrame(loop);
+    </script>
+  </body>
+</html>
